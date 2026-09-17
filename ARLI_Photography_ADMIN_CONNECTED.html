@@ -537,7 +537,31 @@ async function boot(){
 }
 async function logout(){await sb.auth.signOut();location.reload();}
 
-async function loadAll(){await Promise.all([loadCategories(),loadPhotos(),loadVideos(),loadClients(),loadAbout(),loadStats()]);}
+async function loadAll(){
+  const tasks=[
+    ['دسته‌بندی‌ها',loadCategories],
+    ['عکس‌ها',loadPhotos],
+    ['ویدیوها',loadVideos],
+    ['مشتری‌ها',loadClients],
+    ['اطلاعات درباره من',loadAbout],
+    ['آمار',loadStats]
+  ];
+
+  const errors=[];
+
+  for(const [name,fn] of tasks){
+    try{
+      await fn();
+    }catch(err){
+      console.error('خطا در '+name+':',err);
+      errors.push(name);
+    }
+  }
+
+  if(errors.length){
+    console.warn('بخش‌های دارای خطا:',errors);
+  }
+}
 async function loadCategories(){
  const {data,error}=await sb.from('categories').select('*').order('sort_order',{ascending:true}); if(error){console.error(error);return;}
  cats=data||[];renderCats();refreshUploadCategories();refreshVideoCategories();
