@@ -1,0 +1,926 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ARLI Photography — پنل مدیریت</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Vazirmatn:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4efe9;--paper:#fcf9f5;--ink:#302c28;--muted:#81766d;--line:#ded4ca;--accent:#9b8370;--dark:#292521}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Vazirmatn,sans-serif;font-weight:300}
+.app{display:flex;min-height:100vh}.side{width:265px;background:var(--dark);color:#eee8e1;padding:30px 18px;position:fixed;right:0;top:0;bottom:0}.brand{font:600 32px "Cormorant Garamond";letter-spacing:3px;direction:ltr;text-align:center;padding:8px 0 35px}.brand small{display:block;font:300 10px Vazirmatn;letter-spacing:2px;margin-top:4px;color:#bcb1a8}
+.nav button{width:100%;border:0;background:none;color:#cfc5bd;text-align:right;padding:14px 16px;border-radius:8px;font-family:inherit;cursor:pointer;margin:2px 0}.nav button.active,.nav button:hover{background:#484039;color:white}.nav span{margin-left:10px}
+.main{margin-right:265px;width:calc(100% - 265px);padding:32px 40px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px}.top h1{font:500 48px "Cormorant Garamond";margin:0;direction:ltr}.view{border:1px solid var(--line);padding:10px 18px;border-radius:30px;text-decoration:none;color:var(--ink);font-size:12px}
+.page{display:none}.page.active{display:block}.sub{color:var(--muted);font-size:13px;margin-top:-20px;margin-bottom:28px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:25px}.stat,.panel{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:22px}.stat b{font-size:28px;display:block;margin-top:10px}.stat span{font-size:12px;color:var(--muted)}
+.panel{margin-bottom:20px}.panel-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.panel-title h2{font-size:17px;font-weight:500;margin:0}.btn{border:0;background:var(--ink);color:white;border-radius:5px;padding:11px 18px;font-family:inherit;cursor:pointer}.btn.soft{background:#e8ded5;color:var(--ink)}.btn.danger{background:#8b5555}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}.media{position:relative;background:#ddd;border-radius:5px;overflow:hidden;aspect-ratio:3/4}.media img{width:100%;height:100%;object-fit:cover}.media .x{position:absolute;top:9px;left:9px;width:30px;height:30px;border:0;border-radius:50%;background:#fffddddd;cursor:pointer}.media .heart{position:absolute;bottom:9px;left:9px;background:#fffddddd;border-radius:20px;padding:6px 11px;font-size:12px}
+.cats{display:flex;gap:9px;flex-wrap:wrap}.tag{border:1px solid var(--line);background:#fff;padding:10px 15px;border-radius:30px;display:flex;gap:10px;align-items:center}.tag button{border:0;background:none;cursor:pointer;color:#8b6660}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:right;padding:15px 10px;border-bottom:1px solid var(--line)}th{color:var(--muted);font-weight:400}.customer{cursor:pointer}.customer:hover{background:#f5eee7}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.field{margin-bottom:15px}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:7px}.field input,.field textarea{width:100%;border:1px solid var(--line);background:#fff;padding:13px;border-radius:5px;font:inherit;outline:none}.field textarea{min-height:140px;resize:vertical}.profile{display:flex;gap:25px;align-items:flex-start}.avatar{width:145px;height:180px;border-radius:80px 5px 5px 5px;overflow:hidden;background:#ddd;flex:none}.avatar img{width:100%;height:100%;object-fit:cover}.upload{margin-top:10px}
+.note{padding:12px 15px;background:#eee5dc;border-radius:5px;font-size:12px;color:#6d625a;margin-bottom:18px}
+.modal{display:none;position:fixed;inset:0;background:#201b18bb;z-index:5;align-items:center;justify-content:center;padding:20px}.modal.show{display:flex}.modalbox{background:var(--paper);padding:28px;width:min(520px,100%);border-radius:8px}.modalbox h3{margin-top:0}.close{float:left;border:0;background:none;font-size:24px;cursor:pointer}
+
+.client-list-head{display:flex;justify-content:space-between;align-items:center;margin:8px 0 18px}
+.client-list-head h2{margin:2px 0 0;font-size:23px;font-weight:500}
+.eyebrow{font-size:10px;letter-spacing:2.2px;color:var(--accent);font-weight:500;direction:ltr}
+.client-count{background:var(--paper);border:1px solid var(--line);padding:12px 18px;border-radius:10px;text-align:center;min-width:125px}
+.client-count b{display:block;font:500 24px "Cormorant Garamond";direction:ltr}
+.client-count span,.muted-small{font-size:11px;color:var(--muted)}
+.clients-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.client-card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:20px;display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;transition:.2s;cursor:pointer}
+.client-card:hover{transform:translateY(-2px);box-shadow:0 12px 28px #392f2812;border-color:#cdbfb2}
+.client-avatar{width:50px;height:50px;border-radius:50%;background:#e9dfd6;display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:19px}
+.client-info h3{margin:0 0 5px;font-size:16px;font-weight:500}
+.client-info p{margin:0 0 5px;font-size:12px;color:var(--muted);direction:ltr;text-align:right}
+.client-date{font-size:11px;color:var(--muted)}
+.client-likes{text-align:center;min-width:70px;border-right:1px solid var(--line);padding-right:17px}
+.client-likes b{display:block;font-size:20px;font-weight:500}
+.client-likes span{font-size:10px;color:var(--muted)}
+.client-arrow{font-size:18px;color:var(--accent);margin-right:2px}
+.liked-header{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:22px}
+.back-btn{border:1px solid var(--line);background:white;color:var(--ink);padding:9px 13px;border-radius:7px;font-family:inherit;cursor:pointer}
+.client-profile{display:flex;align-items:center;gap:14px}
+.client-profile h2{margin:3px 0 4px;font-size:21px;font-weight:500}
+.client-profile p{margin:0;color:var(--muted);font-size:12px;direction:ltr;text-align:right}
+.liked-summary{text-align:center;border-right:1px solid var(--line);padding-right:24px;min-width:120px}
+.liked-summary b{display:block;font:500 34px "Cormorant Garamond";direction:ltr}
+.liked-summary span{font-size:11px;color:var(--muted)}
+.liked-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}
+.liked-item{position:relative;aspect-ratio:3/4;border-radius:8px;overflow:hidden;background:#ddd;cursor:pointer}
+.liked-item img{width:100%;height:100%;object-fit:cover;display:block;transition:.35s}
+.liked-item:hover img{transform:scale(1.035)}
+.liked-item .like-badge{position:absolute;left:10px;bottom:10px;background:#fffdddf2;border-radius:18px;padding:6px 10px;font-size:11px}
+.about-layout{display:grid;grid-template-columns:250px 1fr;gap:20px;align-items:start}
+.about-main{display:flex;flex-direction:column;gap:20px}
+.about-sidebar{position:sticky;top:25px}
+.avatar-large{width:100%;height:290px;border-radius:12px;overflow:hidden;background:#ddd}
+.avatar-large img{width:100%;height:100%;object-fit:cover}
+.upload-box{margin-top:13px;border:1px dashed #cfc2b7;background:#fff;padding:14px;border-radius:8px;display:block;text-align:center;cursor:pointer}
+.upload-box span{display:block;font-size:12px;color:var(--ink)}
+.upload-box small{display:block;font-size:10px;color:var(--muted);margin-top:5px}
+.upload-box input{display:none}
+.profile-note{font-size:10px;line-height:1.8;color:var(--muted);margin-top:12px}
+.formgrid-wide{grid-template-columns:1fr 1fr;gap:20px}
+.field input,.field textarea{font-size:13px;line-height:1.8}
+.field input{min-height:48px}
+.field textarea.textarea-large{min-height:190px;line-height:2}
+.field textarea.textarea-medium{min-height:120px;line-height:2}
+.about-main .panel{padding:26px}
+.about-main .panel-title{align-items:flex-start}
+.about-main .panel-title h2{margin-top:3px;font-size:18px}
+@media(max-width:1000px){.clients-grid{grid-template-columns:1fr}.liked-grid{grid-template-columns:repeat(3,1fr)}.about-layout{grid-template-columns:1fr}.about-sidebar{position:static}.avatar-large{max-width:280px;height:280px}}
+
+
+.video-admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.video-admin-card{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.video-admin-frame{aspect-ratio:16/9;background:#211d1a}.video-admin-frame iframe{width:100%;height:100%;border:0;display:block}
+.video-admin-info{padding:15px;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.video-admin-info h3{margin:0 0 5px;font-size:14px;font-weight:500}.video-admin-info p{margin:0;font-size:11px;color:var(--muted)}
+.video-actions .danger{border:0;border-radius:6px;padding:7px 10px;font-family:inherit;cursor:pointer;background:#8b5555;color:#fff}
+.liked-video-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.liked-video-card{border:1px solid var(--line);border-radius:9px;overflow:hidden;background:#fff}.liked-video-card iframe{width:100%;aspect-ratio:16/9;border:0;display:block}.liked-video-card .vlabel{padding:11px 13px;font-size:12px}
+.video-form{display:grid;gap:14px}.video-form label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px}.video-form input,.video-form select{width:100%;border:1px solid var(--line);background:#fff;padding:13px;border-radius:5px;font:inherit}
+
+
+.media-dashboard-tabs{display:flex;gap:8px;margin:0 0 24px}.dash-tab{border:1px solid var(--line);background:transparent;color:var(--muted);padding:10px 20px;border-radius:30px;font-family:inherit;cursor:pointer}.dash-tab.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.upload-category-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding:12px 14px;background:#faf8f4;border:1px solid var(--line);border-radius:8px}.upload-category-row label{font-size:12px;color:var(--muted)}.upload-category-row select{min-width:180px;border:1px solid var(--line);background:#fff;padding:9px 12px;border-radius:5px;font-family:inherit}
+.client-media-actions{display:flex;flex-direction:column;gap:6px;margin-top:9px}.client-media-actions .btn{font-size:10px;padding:7px 9px}
+
+@media(max-width:850px){.video-admin-grid,.liked-video-grid{grid-template-columns:1fr}
+.liked-header{grid-template-columns:1fr}.liked-summary{border-right:0;border-top:1px solid var(--line);padding:14px 0 0}.liked-grid{grid-template-columns:repeat(2,1fr)}.formgrid-wide{grid-template-columns:1fr}.client-list-head{align-items:flex-start;gap:12px}
+.side{width:75px;padding:20px 8px}.brand{font-size:22px}.brand small,.nav button .txt{display:none}.nav button{text-align:center}.main{margin-right:75px;width:calc(100% - 75px);padding:22px 15px}.stats{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr 1fr}.formgrid{grid-template-columns:1fr}.top h1{font-size:38px}}
+
+/* ===== Clients: clean responsive layout ===== */
+#clients .clients-grid{
+  width:100%;
+  max-width:1100px;
+  margin:24px auto 0;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:18px;
+  box-sizing:border-box;
+}
+#clients .client-card{
+  width:100%;
+  min-width:0;
+  box-sizing:border-box;
+  padding:20px;
+  border-radius:20px;
+  overflow:hidden;
+}
+#clients .client-card *{
+  max-width:100%;
+  box-sizing:border-box;
+}
+#clients .client-card .client-head{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+#clients .client-card .client-info{
+  min-width:0;
+  flex:1;
+}
+#clients .client-card .client-info h3,
+#clients .client-card .client-info p{
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
+#clients .client-card .client-actions{
+  width:100%;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:10px;
+  margin-top:16px;
+}
+#clients .client-card .client-actions button{
+  width:100%;
+  min-width:0;
+  white-space:normal;
+  line-height:1.6;
+  padding:10px 8px;
+  font-size:13px;
+}
+@media (max-width:760px){
+  #clients .clients-grid{
+    grid-template-columns:1fr;
+    gap:14px;
+    margin-top:18px;
+  }
+  #clients .client-card{
+    padding:16px;
+    border-radius:17px;
+  }
+  #clients .client-card .client-actions{
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+}
+@media (max-width:420px){
+  #clients .client-card{
+    padding:14px;
+  }
+  #clients .client-card .client-head{
+    gap:11px;
+  }
+  #clients .client-card .client-actions{
+    grid-template-columns:1fr;
+  }
+  #clients .client-card .client-actions button{
+    font-size:12.5px;
+  }
+}
+
+
+/* ===== Client name & phone: Persian RTL text fix ===== */
+#clients .client-card .client-head,
+#clients .client-card .client-info,
+#clients .client-card .client-info h3,
+#clients .client-card .client-info p{
+  direction:rtl !important;
+  unicode-bidi:plaintext !important;
+  text-align:right !important;
+}
+#clients .client-card .client-info{
+  display:block !important;
+  flex:1 1 auto !important;
+  min-width:0 !important;
+}
+#clients .client-card .client-info h3{
+  display:block !important;
+  width:100% !important;
+  white-space:nowrap !important;
+  overflow:visible !important;
+  word-break:normal !important;
+  overflow-wrap:normal !important;
+  letter-spacing:normal !important;
+}
+#clients .client-card .client-info p{
+  display:block !important;
+  width:100% !important;
+  white-space:nowrap !important;
+  overflow:visible !important;
+  word-break:normal !important;
+  overflow-wrap:normal !important;
+  letter-spacing:normal !important;
+}
+
+
+/* ===== Smaller client like buttons ===== */
+#clients .client-card .client-actions{
+  gap:7px !important;
+  margin-top:12px !important;
+}
+#clients .client-card .client-actions button{
+  padding:7px 6px !important;
+  min-height:36px !important;
+  font-size:12px !important;
+  line-height:1.35 !important;
+  border-radius:10px !important;
+}
+@media (max-width:420px){
+  #clients .client-card .client-actions{
+    gap:7px !important;
+  }
+  #clients .client-card .client-actions button{
+    padding:6px 5px !important;
+    min-height:34px !important;
+    font-size:11.5px !important;
+  }
+}
+
+
+/* ===== Compact client action labels ===== */
+#clients .client-card .client-actions button{
+  padding:6px 8px !important;
+  min-height:32px !important;
+  font-size:12px !important;
+  line-height:1.25 !important;
+}
+@media (max-width:420px){
+  #clients .client-card .client-actions button{
+    padding:5px 7px !important;
+    min-height:30px !important;
+    font-size:11.5px !important;
+  }
+}
+
+</style>
+
+<style>
+.clients-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px;margin-top:22px}
+.client-card{background:#fff;border:1px solid rgba(80,55,40,.12);border-radius:20px;padding:22px;box-shadow:0 8px 30px rgba(60,40,30,.06)}
+.client-card h3{margin:0 0 8px;font-size:20px}
+.client-meta{display:flex;flex-direction:column;gap:5px;color:#75685f;font-size:13px;margin-bottom:16px}
+.client-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.client-actions button{width:100%;padding:11px 8px;border-radius:12px;border:1px solid rgba(80,55,40,.15);cursor:pointer;font-family:inherit}
+.client-actions .photo-like-btn{background:#4b3a31;color:#fff}
+.client-actions .video-like-btn{background:#efe7df;color:#3d3029}
+.count-badge{display:inline-flex;min-width:22px;height:22px;padding:0 6px;align-items:center;justify-content:center;border-radius:20px;background:rgba(255,255,255,.18);margin-right:4px;font-size:12px}
+.video-like-btn .count-badge{background:rgba(80,55,40,.10)}
+</style>
+
+<style>
+.login-overlay{position:fixed;inset:0;background:#302c28;z-index:9999;display:none;align-items:center;justify-content:center;padding:20px}.login-box{width:min(430px,100%);background:#fbf8f4;border-radius:18px;padding:32px;box-shadow:0 30px 80px #0005}.brand-login{font:500 34px "Cormorant Garamond";letter-spacing:4px;direction:ltr}.brand-login small{display:block;font:500 9px Vazirmatn;letter-spacing:2px;color:#9b8370;margin-top:3px}.login-box h2{margin:24px 0 6px;font-size:22px}.login-box p{font-size:12px;color:#81766d;line-height:1.9}.login-box input{display:block;width:100%;padding:13px;border:1px solid #ddd3ca;border-radius:7px;background:#fff;margin:9px 0;font:inherit}.login-box .btn{width:100%;margin-top:8px}.login-msg{min-height:22px;color:#9a5e63;font-size:12px;margin-top:10px;text-align:center}.login-overlay.show{display:flex}
+</style>
+
+<style>
+/* ===== Photo management: edit / delete ===== */
+.media .edit{position:absolute;top:9px;right:9px;min-width:34px;height:34px;padding:0 9px;border:0;border-radius:18px;background:#fffdddf2;color:var(--ink);cursor:pointer;font-family:inherit;font-size:11px}
+.media .x{left:9px;right:auto}
+.photo-edit-form{display:grid;gap:14px}.photo-edit-form label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+.photo-edit-form input,.photo-edit-form select{width:100%;border:1px solid var(--line);background:#fff;padding:12px;border-radius:6px;font:inherit}
+.photo-edit-form .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.photo-edit-preview{width:100%;max-height:260px;object-fit:contain;background:#eee7df;border-radius:7px;margin-bottom:4px}
+.photo-edit-actions{display:flex;gap:8px}.photo-edit-actions .btn{flex:1}
+@media(max-width:600px){.photo-edit-form .row{grid-template-columns:1fr}}
+
+/* ===== ARLI requested client card fixes only ===== */
+#clients .client-card .client-likes{min-width:112px !important;width:112px !important;border-right:0 !important;padding-right:0 !important;text-align:stretch !important;}
+#clients .client-card .client-media-actions{display:flex !important;flex-direction:column !important;gap:5px !important;margin-top:0 !important;}
+#clients .client-card .client-media-actions .btn{width:112px !important;min-width:112px !important;max-width:112px !important;padding:5px 6px !important;min-height:30px !important;font-size:10px !important;line-height:1.2 !important;border-radius:8px !important;white-space:nowrap !important;}
+#clients .client-card .client-media-actions .btn b{display:inline !important;font-size:10px !important;font-weight:600 !important;}
+#clients .client-card .client-media-actions .danger{color:#a33a34 !important;background:#fff0ef !important;}
+@media(max-width:760px){#clients .client-card .client-likes{width:100% !important;min-width:0 !important;}#clients .client-card .client-media-actions{display:grid !important;grid-template-columns:repeat(3,minmax(0,1fr)) !important;}#clients .client-card .client-media-actions .btn{width:100% !important;min-width:0 !important;max-width:none !important;}}
+</style>
+
+</head>
+<body>
+<div id="loginOverlay" class="login-overlay show"><div class="login-box"><div class="brand-login">ARLI<small>PHOTOGRAPHY · ADMIN</small></div><h2>ورود مدیر</h2><p>برای ورود به پنل مدیریت، ایمیل و رمز حساب مدیر را وارد کنید.</p><input id="adminEmail" type="email" placeholder="ایمیل مدیر" autocomplete="username"><input id="adminPassword" type="password" placeholder="رمز عبور" autocomplete="current-password"><button class="btn" onclick="login()">ورود به پنل</button><div id="loginMsg" class="login-msg"></div></div></div>
+<div id="appRoot" style="display:none"><div class="app">
+<aside class="side"><div class="brand">ARLI<small>PHOTOGRAPHY · ADMIN</small></div>
+<div class="nav">
+<button class="active" onclick="page('dashboard',this)">⌂ <span class="txt">داشبورد</span></button>
+<button onclick="page('portfolio',this)">▧ <span class="txt">نمونه‌کارها</span></button><button onclick="page('videos',this)">▶ <span class="txt">ویدیوها</span></button>
+<button onclick="page('categories',this)">◫ <span class="txt">دسته‌بندی‌ها</span></button>
+<button onclick="page('clients',this)">♡ <span class="txt">مشتری‌ها و لایک‌ها</span></button>
+<button onclick="page('about',this)">✦ <span class="txt">درباره من</span></button>
+<button onclick="page('settings',this)">⚙ <span class="txt">تنظیمات</span></button>
+</div></aside>
+<main class="main">
+<div class="top"><div><h1 id="title">Dashboard</h1></div><div style="display:flex;gap:8px;align-items:center"><a class="view" href="ARLI_Photography_SITE_CONNECTED.html" target="_blank">مشاهده سایت ↗</a><button class="btn soft" onclick="logout()">خروج</button></div></div>
+
+<section id="dashboard" class="page">
+<div class="sub">نمای کلی فعالیت سایت و سلیقه مشتری‌ها — آمار عکس و ویدیو کاملاً جدا</div>
+<div class="media-dashboard-tabs">
+  <button id="photoDashboardTab" class="dash-tab active" onclick="setDashboardMedia('photos',this)">📷 داشبورد عکس‌ها</button>
+  <button id="videoDashboardTab" class="dash-tab" onclick="setDashboardMedia('videos',this)">🎬 داشبورد ویدیوها</button>
+</div>
+<div id="photoDashboard">
+  <div class="stats">
+    <div class="stat"><span>تعداد عکس‌ها</span><b id="statPhotoCount">0</b></div>
+    <div class="stat"><span>مجموع لایک عکس‌ها</span><b id="statPhotoLikes">0</b></div>
+    <div class="stat"><span>بازدید نمونه‌کارهای عکس</span><b id="statPhotoViews">0</b></div>
+    <div class="stat"><span>محبوب‌ترین سبک عکس</span><b id="statPhotoPopular">—</b></div>
+  </div>
+  <div class="panel"><div class="panel-title"><h2>فعالیت عکس‌ها</h2></div>
+    <table><tr><th>فعالیت</th><th>تعداد</th><th>دسته محبوب</th></tr>
+    <tr><td>لایک عکس‌ها</td><td id="statPhotoLikesTable">0</td><td id="statPhotoLikesCat">—</td></tr><tr><td>بازدید عکس‌ها</td><td id="statPhotoViewsTable">0</td><td id="statPhotoViewsCat">—</td></tr></table>
+  </div>
+  <div class="panel"><div class="panel-title"><h2>محبوب‌ترین سبک‌های عکس</h2></div>
+    <table><tr><th>دسته‌بندی</th><th>تعداد لایک</th><th>سهم</th></tr>
+    <tbody id="photoPopularRows"><tr><td colspan="3">در حال بارگذاری...</td></tr></tbody></table>
+  </div>
+</div>
+<div id="videoDashboard" style="display:none">
+  <div class="stats">
+    <div class="stat"><span>تعداد ویدیوها</span><b id="statVideoCount">0</b></div>
+    <div class="stat"><span>مجموع لایک ویدیوها</span><b id="statVideoLikes">0</b></div>
+    <div class="stat"><span>بازدید نمونه‌کارهای ویدیو</span><b id="statVideoViews">0</b></div>
+    <div class="stat"><span>محبوب‌ترین سبک ویدیو</span><b id="statVideoPopular">—</b></div>
+  </div>
+  <div class="panel"><div class="panel-title"><h2>فعالیت ویدیوها</h2></div>
+    <table><tr><th>فعالیت</th><th>تعداد</th><th>سبک محبوب</th></tr>
+    <tr><td>لایک ویدیوها</td><td id="statVideoLikesTable">0</td><td id="statVideoLikesCat">—</td></tr><tr><td>بازدید ویدیوها</td><td id="statVideoViewsTable">0</td><td id="statVideoViewsCat">—</td></tr></table>
+  </div>
+  <div class="panel"><div class="panel-title"><h2>محبوب‌ترین سبک‌های ویدیو</h2></div>
+    <table><tr><th>دسته‌بندی</th><th>تعداد لایک</th><th>سهم</th></tr>
+    <tbody id="videoPopularRows"><tr><td colspan="3">در حال بارگذاری...</td></tr></tbody></table>
+  </div>
+</div>
+</section>
+
+<section id="portfolio" class="page"><div class="sub">افزودن، حذف و مدیریت عکس‌ها و ویدیوهای نمونه‌کار</div>
+<div class="panel"><div class="upload-category-row">
+              <label>دسته‌بندی نمونه‌کار جدید</label>
+              <select id="uploadCategory" onchange="setUploadCategory(this.value)"></select>
+            </div>
+            <div class="panel-title"><h2>مدیریت رسانه</h2><div><button class="btn soft" onclick="document.getElementById('photoInput').click()">＋ افزودن عکس</button><input id="photoInput" type="file" accept="image/*" multiple hidden onchange="addPhotos(this)"></div></div>
+<div class="note">در نسخه واقعی، عکس‌ها به دسته‌بندی انتخاب‌شده متصل می‌شوند و ترتیب نمایش نیز قابل تغییر خواهد بود.</div>
+<div class="grid" id="mediaGrid"></div></div></section>
+
+<section id="videos" class="page">
+<div class="sub">ویدیوها روی YouTube میزبانی می‌شوند و سایت فقط آن‌ها را نمایش می‌دهد؛ بنابراین فضای هاست سایت مصرف نمی‌شود.</div>
+<div class="panel">
+<div class="panel-title"><div><div class="eyebrow">YOUTUBE PORTFOLIO</div><h2>مدیریت ویدیوها</h2></div><button class="btn" onclick="openVideoModal()">＋ افزودن ویدیو</button></div>
+<div class="note">ویدیو را ابتدا در YouTube آپلود کنید و سپس لینک آن را اینجا ثبت کنید. برای نمونه‌کارهایی که نمی‌خواهید در جستجوی YouTube دیده شوند، حالت Unlisted / فهرست‌نشده را انتخاب کنید.</div>
+<div class="video-admin-grid" id="videoAdminGrid"></div>
+</div></section>
+
+<section id="likedVideos" class="page">
+<div class="sub">تمام ویدیوهایی که این مشتری پسندیده است.</div>
+<div class="liked-header panel">
+<button class="back-btn" onclick="openClients()">← بازگشت به مشتری‌ها</button>
+<div class="client-profile"><div class="client-avatar">♥</div><div><div class="eyebrow">CLIENT VIDEO STYLE</div><h2 id="likedVideoName">—</h2><p id="likedVideoPhone">—</p></div></div>
+<div class="liked-summary"><b id="likedVideoCount">0</b><span>ویدیوی پسندیده‌شده</span></div>
+</div>
+<div class="panel"><div class="panel-title"><h2>ویدیوهای لایک‌شده</h2></div><div class="liked-video-grid" id="likedVideoGrid"></div></div>
+</section>
+<section id="categories" class="page"><div class="sub">دسته‌بندی‌های نامحدود و قابل مدیریت</div>
+<div class="panel"><div class="panel-title"><h2>دسته‌بندی‌ها</h2><button class="btn" onclick="newCat()">＋ دسته جدید</button></div><div class="cats" id="catList"></div></div></section>
+
+<section id="clients" class="page">
+<div class="sub">مشتری‌ها را مرتب ببینید و برای شناخت سلیقه هر مشتری، عکس‌ها و ویدیوهای پسندیده‌شده را جداگانه مشاهده کنید.</div>
+<div class="client-list-head">
+  <div><div class="eyebrow">CLIENTS</div><h2>لیست مشتری‌ها</h2></div>
+  <div class="client-count"><b id="clientCount">4</b><span>مشتری ثبت‌شده</span></div>
+</div>
+<div style="margin:18px 0 12px;font-weight:600;font-size:18px">لیست مشتری‌ها</div>
+   <div class="clients-grid" id="clientCards">
+
+    <div class="client-card">
+      <div class="client-avatar">♡</div>
+      <div class="client-info">
+        <h3>سارا احمدی</h3>
+        <p>۰۹۱۲ ۱۲۳ ۲۱۴۵</p>
+        <div class="client-date">تاریخ ورود: ۱۴۰۵/۰۵/۱۲</div>
+        <div class="client-date">آخرین فعالیت: ۱۴۰۵/۰۶/۱۹</div>
+      </div>
+      <div class="client-likes" style="min-width:260px">
+        <div class="client-media-actions" style="display:flex;flex-direction:column;gap:8px">
+          <button class="btn soft" onclick="openLiked(0);event.stopPropagation()">📷 عکس‌ها <b>18</b></button>
+          <button class="btn" onclick="openLikedVideos(0);event.stopPropagation()">🎬 ویدیوها <b>2</b></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="client-card">
+      <div class="client-avatar">♡</div>
+      <div class="client-info">
+        <h3>مریم رضایی</h3>
+        <p>۰۹۱۲ ۱۲۳ ۷۷۲۱</p>
+        <div class="client-date">تاریخ ورود: ۱۴۰۵/۰۵/۲۶</div>
+        <div class="client-date">آخرین فعالیت: ۱۴۰۵/۰۶/۱۸</div>
+      </div>
+      <div class="client-likes" style="min-width:260px">
+        <div class="client-media-actions" style="display:flex;flex-direction:column;gap:8px">
+          <button class="btn soft" onclick="openLiked(1);event.stopPropagation()">📷 عکس‌ها <b>12</b></button>
+          <button class="btn" onclick="openLikedVideos(1);event.stopPropagation()">🎬 ویدیوها <b>1</b></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="client-card">
+      <div class="client-avatar">♡</div>
+      <div class="client-info">
+        <h3>الهام محمدی</h3>
+        <p>۰۹۱۲ ۱۲۳ ۳۹۸۲</p>
+        <div class="client-date">تاریخ ورود: ۱۴۰۵/۰۴/۲۹</div>
+        <div class="client-date">آخرین فعالیت: ۱۴۰۵/۰۶/۱۷</div>
+      </div>
+      <div class="client-likes" style="min-width:260px">
+        <div class="client-media-actions" style="display:flex;flex-direction:column;gap:8px">
+          <button class="btn soft" onclick="openLiked(2);event.stopPropagation()">📷 عکس‌ها <b>25</b></button>
+          <button class="btn" onclick="openLikedVideos(2);event.stopPropagation()">🎬 ویدیوها <b>2</b></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="client-card">
+      <div class="client-avatar">♡</div>
+      <div class="client-info">
+        <h3>نیلوفر کریمی</h3>
+        <p>۰۹۱۲ ۱۲۳ ۶۴۱۸</p>
+        <div class="client-date">تاریخ ورود: ۱۴۰۵/۰۶/۰۳</div>
+        <div class="client-date">آخرین فعالیت: ۱۴۰۵/۰۶/۱۵</div>
+      </div>
+      <div class="client-likes" style="min-width:260px">
+        <div class="client-media-actions" style="display:flex;flex-direction:column;gap:8px">
+          <button class="btn soft" onclick="openLiked(3);event.stopPropagation()">📷 عکس‌ها <b>9</b></button>
+          <button class="btn" onclick="openLikedVideos(3);event.stopPropagation()">🎬 ویدیوها <b>1</b></button>
+        </div>
+      </div>
+    </div>
+</div>
+</section>
+
+<section id="likedPhotos" class="page">
+<div class="sub">تمام عکس‌هایی که این مشتری پسندیده است.</div>
+<div class="liked-header panel">
+  <button class="back-btn" onclick="openClients()">← بازگشت به مشتری‌ها</button>
+  <div class="client-profile">
+    <div class="client-avatar" id="likedAvatar">♥</div>
+    <div><div class="eyebrow">CLIENT STYLE PROFILE</div><h2 id="likedName">—</h2><p id="likedPhone">—</p></div>
+  </div>
+  <div class="liked-summary"><b id="likedCount">0</b><span>عکس پسندیده‌شده</span></div>
+</div>
+<div class="panel"><div class="panel-title"><h2>عکس‌های لایک‌شده</h2><span class="muted-small">برای بررسی سلیقه بصری مشتری</span></div>
+<div class="liked-grid" id="likedGrid"></div></div>
+</section>
+
+<section id="about" class="page">
+<div class="sub">اطلاعات معرفی برند، پروفایل و متن‌های سایت را از اینجا مدیریت کنید.</div>
+
+<div class="about-layout">
+  <div class="about-sidebar panel">
+    <div class="panel-title"><h2>تصویر پروفایل</h2></div>
+    <div class="avatar avatar-large"><img id="avatar" src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=600&q=85"></div>
+    <label class="upload-box">
+      <span>＋ انتخاب تصویر جدید</span>
+      <small>JPG یا PNG · تصویر باکیفیت</small>
+      <input class="upload" type="file" accept="image/*" onchange="previewAvatar(this)">
+    </label>
+    <div class="profile-note">این تصویر در بخش «درباره من» سایت نمایش داده می‌شود.</div>
+  </div>
+
+  <div class="about-main">
+    <div class="panel">
+      <div class="panel-title"><div><div class="eyebrow">PROFILE</div><h2>اطلاعات اصلی</h2></div><button class="btn" onclick="saveAbout()">ذخیره تغییرات</button></div>
+      <div class="formgrid formgrid-wide">
+        <div class="field"><label>نام و نام خانوادگی</label><input id="aboutName" value="دلارام خسروی"></div>
+        <div class="field"><label>عنوان حرفه‌ای</label><input id="aboutTitle" value="Photographer · ARLI Photography"></div>
+        <div class="field"><label>شماره تماس</label><input id="phone" value="09XX XXX XXXX"></div>
+        <div class="field"><label>Instagram</label><input id="instagram" value="@arli.photography"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title"><div><div class="eyebrow">ABOUT</div><h2>معرفی و بیوگرافی</h2></div></div>
+      <div class="field"><label>متن بیوگرافی</label><textarea id="bio" class="textarea-large">دلارام خسروی، عکاس پرتره، کودک و سبک زندگی. ثبت لحظه‌هایی طبیعی، احساسی و ماندگار، با تمرکز بر نور، ارتباط و زیبایی ساده‌ی لحظه‌ها.</textarea></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title"><div><div class="eyebrow">CONTENT</div><h2>محتوای تکمیلی سایت</h2></div></div>
+      <div class="field"><label>رزومه / سابقه کاری</label><textarea id="resume" class="textarea-large">عکاسی تخصصی کودک، نوزاد، بارداری، پرتره و لایف‌استایل</textarea></div>
+      <div class="field"><label>متن کوتاه صفحه اصلی</label><textarea id="homeText" class="textarea-medium">لحظه‌هایی که ارزش ماندن دارند.</textarea></div>
+      <div class="field"><label>نوشته انگلیسی ابتدای صفحه</label><input id="homeTitle" value="Moments,\nbeautifully kept."></div>
+      <div class="field"><label>عکس ابتدای صفحه</label><div class="avatar" style="height:220px;border-radius:12px;overflow:hidden;margin-bottom:10px"><img id="homeImage" src="" alt="تصویر ابتدای صفحه" style="width:100%;height:100%;object-fit:cover"></div><label class="upload-box"><span>＋ انتخاب عکس جدید</span><small>JPG یا PNG · عکس ابتدای صفحه</small><input class="upload" type="file" accept="image/*" onchange="previewHomeImage(this)"></label></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<section id="settings" class="page"><div class="sub">تنظیمات ظاهری و عمومی سایت</div><div class="panel"><h2>اطلاعات برند</h2><div class="formgrid"><div class="field"><label>نام برند</label><input value="ARLI PHOTOGRAPHY"></div><div class="field"><label>آدرس صفحه اینستاگرام</label><input value="arli.photography"></div></div><button class="btn" onclick="alert('تنظیمات ذخیره شد.')">ذخیره</button></div></section>
+</main></div>
+
+<div class="modal" id="videoModal"><div class="modalbox"><button class="close" onclick="closeVideoModal()">×</button><h3>افزودن ویدیو</h3><div class="video-form"><div><label>عنوان ویدیو</label><input id="videoTitleInput" placeholder="مثلاً پشت صحنه عکاسی کودک"></div><div><label>دسته‌بندی</label><select id="videoCatInput" required></select></div><div><label>لینک YouTube</label><input id="videoUrlInput" placeholder="https://www.youtube.com/watch?v=..."></div><button class="btn" onclick="addVideo()">افزودن به نمونه‌کارها</button></div></div></div>
+
+<div class="modal" id="photoEditModal">
+  <div class="modalbox">
+    <button class="close" onclick="closePhotoEdit()">×</button>
+    <h3>ویرایش نمونه‌کار</h3>
+    <form class="photo-edit-form" onsubmit="savePhotoEdit(event)">
+      <input id="editPhotoId" type="hidden">
+      <img id="editPhotoPreview" class="photo-edit-preview" alt="">
+      <div class="field"><label>عنوان عکس</label><input id="editPhotoTitle" type="text" required></div>
+      <div class="row">
+        <div><label>دسته‌بندی</label><select id="editPhotoCategory" required></select></div>
+        <div><label>ترتیب نمایش</label><input id="editPhotoSort" type="number" min="0" step="1"></div>
+      </div>
+      <div><label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input id="editPhotoVisible" type="checkbox" style="width:auto"> نمایش این عکس در سایت</label></div>
+      <div class="field"><label>جایگزینی فایل عکس (اختیاری)</label><input id="editPhotoFile" type="file" accept="image/*"></div>
+      <div class="photo-edit-actions">
+        <button type="button" class="btn soft" onclick="closePhotoEdit()">انصراف</button>
+        <button type="submit" class="btn" id="savePhotoEditBtn">ذخیره تغییرات</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal" id="modal"><div class="modalbox"><button class="close" onclick="closeM()">×</button><h3>دسته‌بندی جدید</h3><div class="field"><label>نام دسته‌بندی</label><input id="newCatName" placeholder="مثلاً عکاسی خانوادگی"></div><button class="btn" onclick="addCat()">ایجاد دسته‌بندی</button></div></div>
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+
+const SUPABASE_URL='https://lfsedlrosovwuetugcnb.supabase.co', SUPABASE_KEY='sb_publishable_mVdhhaKQqYhBKhhfH5vPMA_7reweGAX';
+let sb=null;
+let cats=[],photos=[],videos=[],clients=[],currentClient=null;
+try{
+  if(!window.supabase || typeof window.supabase.createClient!=='function') throw new Error('کتابخانه Supabase از اینترنت بارگذاری نشد. اتصال اینترنت را بررسی کنید و صفحه را دوباره باز کنید.');
+  sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+}catch(e){
+  console.error('Supabase initialization error:',e);
+  const el=document.getElementById('loginMsg');
+  if(el) el.textContent='خطا در اتصال به Supabase: '+e.message;
+}
+
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
+function youtubeId(url){const m=String(url||'').match(/(?:youtu\.be\/|youtube\.com\/watch\?v=|youtube\.com\/embed\/)([A-Za-z0-9_-]{6,})/);return m?m[1]:'';}
+function embed(url){const id=youtubeId(url);return id?'https://www.youtube.com/embed/'+id:url;}
+function catName(id){return cats.find(c=>c.id===id)?.name||'بدون دسته';}
+function fmtDate(v){if(!v)return'—';try{return new Intl.DateTimeFormat('fa-IR',{year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(v));}catch{return v;}}
+
+async function login(){
+  const email=document.getElementById('adminEmail').value.trim();
+  const pass=document.getElementById('adminPassword').value;
+  const msg=document.getElementById('loginMsg');
+  const btn=document.querySelector('#loginOverlay .btn');
+  if(!email||!pass){msg.textContent='ایمیل و رمز عبور را وارد کنید.';return;}
+  if(!sb){msg.textContent='اتصال Supabase برقرار نشده است. صفحه را دوباره باز کنید.';return;}
+  msg.textContent='در حال ورود...';
+  if(btn)btn.disabled=true;
+  try{
+    const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+    if(error){
+      console.error('Supabase Auth error:',error);
+      const code=error.code?` [${error.code}]`:'';
+      msg.textContent='خطا در ورود'+code+': '+(error.message||'اطلاعات ورود صحیح نیست');
+      return;
+    }
+    if(!data?.user){msg.textContent='ورود انجام نشد؛ کاربر دریافت نشد.';return;}
+    const ADMIN_USER_ID='ed695a2b-f464-4ff0-8a2f-014862cca007';
+    if(data.user.id!==ADMIN_USER_ID){
+      await sb.auth.signOut();
+      msg.textContent='این حساب مدیر ثبت‌شده نیست.';
+      return;
+    }
+    msg.textContent='ورود موفق بود؛ در حال بارگذاری پنل...';
+    document.getElementById('loginOverlay').classList.remove('show');
+    document.getElementById('appRoot').style.display='block';
+    try{await loadAll();}
+    catch(loadErr){console.error('Panel load error:',loadErr);alert('ورود موفق بود، اما بارگذاری اطلاعات پنل با خطا روبه‌رو شد.');}
+  }catch(err){
+    console.error('Login unexpected error:',err);
+    msg.textContent='خطای غیرمنتظره: '+(err?.message||String(err));
+  }finally{
+    if(btn)btn.disabled=false;
+  }
+}
+async function boot(){
+  if(!sb)return;
+  try{
+    const {data,error}=await sb.auth.getSession();
+    if(error){console.error('Session error:',error);document.getElementById('loginMsg').textContent='خطا در بررسی ورود: '+error.message;return;}
+    const session=data?.session;
+    if(!session){document.getElementById('loginOverlay').classList.add('show');return;}
+    const ADMIN_USER_ID='ed695a2b-f464-4ff0-8a2f-014862cca007';
+    if(session.user?.id===ADMIN_USER_ID){document.getElementById('loginOverlay').classList.remove('show');document.getElementById('appRoot').style.display='block';await loadAll();}
+    else{await sb.auth.signOut();document.getElementById('loginOverlay').classList.add('show');}
+  }catch(err){console.error('Boot error:',err);document.getElementById('loginMsg').textContent='خطا در راه‌اندازی پنل: '+(err?.message||String(err));}
+}
+async function logout(){await sb.auth.signOut();location.reload();}
+
+async function loadAll(){await Promise.all([loadCategories(),loadPhotos(),loadVideos(),loadClients(),loadAbout(),loadStats()]);}
+async function loadCategories(){
+ const {data,error}=await sb.from('categories').select('*').order('sort_order',{ascending:true}); if(error){console.error(error);return;}
+ cats=data||[];renderCats();refreshUploadCategories();refreshVideoCategories();
+}
+async function loadPhotos(){
+ const {data,error}=await sb.from('photos').select('*').order('sort_order',{ascending:true}).order('created_at',{ascending:false});if(error){console.error(error);return;}photos=data||[];renderMedia();loadStats();
+}
+async function loadVideos(){const {data,error}=await sb.from('videos').select('*').order('sort_order',{ascending:true}).order('created_at',{ascending:false});if(error){console.error(error);return;}videos=data||[];renderVideos();loadStats();}
+
+function page(id,btn){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));const p=document.getElementById(id);if(p)p.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));if(btn?.classList)btn.classList.add('active');const titles={dashboard:'Dashboard',portfolio:'Portfolio',categories:'Categories',clients:'Clients',about:'About Me',settings:'Settings',likedPhotos:'Client Likes',videos:'Videos',likedVideos:'Liked Videos'};document.getElementById('title').textContent=titles[id]||id;}
+function renderMedia(){
+  const g=document.getElementById('mediaGrid');if(!g)return;g.innerHTML='';
+  if(!photos.length){g.innerHTML='<div class="note">هنوز عکسی در Supabase ثبت نشده است.</div>';return;}
+  photos.forEach(p=>{
+    g.innerHTML+=`<div class="media"><img src="${esc(p.public_url||'')}" alt="${esc(p.title||'')}"><button class="edit" onclick="openPhotoEdit('${p.id}')" title="ویرایش">✎ ویرایش</button><button class="x" onclick="delImg('${p.id}')" title="حذف">×</button><div class="heart">♥ <span id="pc-${p.id}">0</span></div></div>`;
+  });
+  loadPhotoLikeCounts();
+}
+async function loadPhotoLikeCounts(){for(const p of photos){const {count}=await sb.from('photo_likes').select('*',{count:'exact',head:true}).eq('photo_id',p.id);const el=document.getElementById('pc-'+p.id);if(el)el.textContent=count||0;}}
+async function delImg(id){
+  if(!confirm('این نمونه‌کار و فایل آن از سایت حذف شود؟'))return;
+  const p=photos.find(x=>x.id===id);if(!p)return;
+  const {error}=await sb.from('photos').delete().eq('id',id);
+  if(error){alert('حذف عکس انجام نشد.\n'+(error.message||''));console.error(error);return;}
+  if(p.storage_path){const rm=await sb.storage.from('photos').remove([p.storage_path]);if(rm.error)console.warn('Storage delete warning:',rm.error);}
+  await loadPhotos();alert('عکس با موفقیت حذف شد.');
+}
+function openPhotoEdit(id){
+  const p=photos.find(x=>x.id===id);if(!p)return;
+  document.getElementById('editPhotoId').value=p.id;
+  document.getElementById('editPhotoTitle').value=p.title||'';
+  document.getElementById('editPhotoSort').value=Number.isFinite(Number(p.sort_order))?Number(p.sort_order):0;
+  document.getElementById('editPhotoVisible').checked=p.is_visible!==false;
+  document.getElementById('editPhotoPreview').src=p.public_url||'';
+  const cat=document.getElementById('editPhotoCategory');
+  cat.innerHTML=cats.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
+  cat.value=p.category_id||'';
+  document.getElementById('editPhotoFile').value='';
+  document.getElementById('photoEditModal').classList.add('show');
+}
+function closePhotoEdit(){document.getElementById('photoEditModal').classList.remove('show');}
+async function savePhotoEdit(event){
+  event.preventDefault();
+  const id=document.getElementById('editPhotoId').value,p=photos.find(x=>x.id===id);if(!p)return;
+  const title=document.getElementById('editPhotoTitle').value.trim(),category_id=document.getElementById('editPhotoCategory').value;
+  const sort_order=Math.max(0,Number(document.getElementById('editPhotoSort').value)||0),is_visible=document.getElementById('editPhotoVisible').checked;
+  const file=document.getElementById('editPhotoFile').files[0];
+  if(!title||!category_id){alert('عنوان و دسته‌بندی را کامل کنید.');return;}
+  const btn=document.getElementById('savePhotoEditBtn');btn.disabled=true;btn.textContent='در حال ذخیره...';
+  let newPath=null;
+  try{
+    let newUrl=null;
+    if(file){
+      if(!file.type||!file.type.startsWith('image/')){alert('فایل جدید باید تصویر باشد.');return;}
+      const safe=file.name.replace(/[^\w\-.\u0600-\u06FF ]+/g,'_').trim()||'image';
+      newPath=`portfolio/${Date.now()}-${crypto.randomUUID()}-${safe}`;
+      const up=await sb.storage.from('photos').upload(newPath,file,{contentType:file.type,cacheControl:'31536000',upsert:false});
+      if(up.error){alert('آپلود تصویر جدید انجام نشد:\n'+(up.error.message||''));return;}
+      newUrl=sb.storage.from('photos').getPublicUrl(newPath)?.data?.publicUrl;
+      if(!newUrl){await sb.storage.from('photos').remove([newPath]);newPath=null;alert('لینک عمومی تصویر جدید ساخته نشد.');return;}
+    }
+    const payload={title,category_id,sort_order,is_visible};
+    if(newPath)payload.storage_path=newPath,payload.public_url=newUrl;
+    const r=await sb.from('photos').update(payload).eq('id',id);
+    if(r.error){if(newPath)await sb.storage.from('photos').remove([newPath]);alert('ذخیره تغییرات انجام نشد:\n'+(r.error.message||''));return;}
+    if(newPath&&p.storage_path){const rm=await sb.storage.from('photos').remove([p.storage_path]);if(rm.error)console.warn('Old storage delete warning:',rm.error);}
+    closePhotoEdit();await loadPhotos();alert('تغییرات با موفقیت ذخیره شد.');
+  }catch(err){console.error('Photo edit error:',err);if(newPath)await sb.storage.from('photos').remove([newPath]);alert('خطای غیرمنتظره:\n'+(err?.message||String(err)));}
+  finally{btn.disabled=false;btn.textContent='ذخیره تغییرات';}
+}
+
+async function addPhotos(input){
+  if(!sb){alert('اتصال به Supabase برقرار نیست.');return;}
+  const catId=document.getElementById('uploadCategory').value;
+  if(!catId){alert('ابتدا دسته‌بندی را انتخاب کنید.');return;}
+  const files=[...(input.files||[])];
+  if(!files.length)return;
+
+  const uploadBtn=document.querySelector('button[onclick*="photoInput"]');
+  if(uploadBtn){uploadBtn.disabled=true;uploadBtn.textContent='در حال آپلود...';}
+
+  let ok=0, failed=[];
+  try{
+    for(const f of files){
+      if(!f.type || !f.type.startsWith('image/')){
+        failed.push(f.name+' (فایل تصویر نیست)');
+        continue;
+      }
+
+      const safe=f.name.replace(/[^\w\-.\u0600-\u06FF ]+/g,'_').trim()||'image';
+      const path=`portfolio/${Date.now()}-${crypto.randomUUID()}-${safe}`;
+
+      const up=await sb.storage.from('photos').upload(path,f,{
+        contentType:f.type,
+        cacheControl:'31536000',
+        upsert:false
+      });
+
+      if(up.error){
+        console.error('Storage upload error:',up.error);
+        failed.push(f.name+' — '+(up.error.message||'خطای Storage'));
+        continue;
+      }
+
+      const pub=sb.storage.from('photos').getPublicUrl(path)?.data?.publicUrl;
+      if(!pub){
+        await sb.storage.from('photos').remove([path]);
+        failed.push(f.name+' — ساخت لینک عمومی انجام نشد');
+        continue;
+      }
+
+      const ins=await sb.from('photos').insert({
+        category_id:catId,
+        title:f.name,
+        storage_path:path,
+        public_url:pub,
+        sort_order:photos.length+ok,
+        is_visible:true
+      }).select('*').single();
+
+      if(ins.error){
+        console.error('Database insert error:',ins.error);
+        await sb.storage.from('photos').remove([path]);
+        failed.push(f.name+' — ثبت در جدول photos: '+(ins.error.message||'خطای پایگاه داده'));
+        continue;
+      }
+      ok++;
+    }
+  }catch(err){
+    console.error('Photo upload unexpected error:',err);
+    failed.push('خطای غیرمنتظره: '+(err?.message||String(err)));
+  }finally{
+    input.value='';
+    if(uploadBtn){uploadBtn.disabled=false;uploadBtn.textContent='＋ افزودن عکس';}
+    await loadPhotos();
+  }
+
+  if(failed.length){
+    alert((ok?ok+' عکس با موفقیت آپلود شد.\n\n':'')+
+      'این موارد آپلود نشدند:\n'+failed.join('\n'));
+  }else{
+    alert(ok+' عکس با موفقیت آپلود شد.');
+  }
+}
+function renderCats(){const el=document.getElementById('catList');if(!el)return;el.innerHTML=cats.map(c=>`<div class="tag">${esc(c.name)}<button onclick="delCat('${c.id}')">×</button></div>`).join('');const stat=document.getElementById('statCats');if(stat)stat.textContent=cats.length;}
+function newCat(){document.getElementById('modal').classList.add('show');document.getElementById('newCatName').focus();}
+function closeM(){document.getElementById('modal').classList.remove('show');}
+async function addCat(){const name=document.getElementById('newCatName').value.trim();if(!name)return;const r=await sb.from('categories').insert({name,sort_order:cats.length}).select('*').single();if(r.error){alert('دسته ایجاد نشد: '+r.error.message);return;}document.getElementById('newCatName').value='';closeM();await loadCategories();}
+async function delCat(id){if(!confirm('دسته‌بندی حذف شود؟'))return;const used=photos.some(p=>p.category_id===id)||videos.some(v=>v.category_id===id);if(used){alert('این دسته‌بندی هنوز عکس یا ویدیو دارد و حذف نمی‌شود.');return;}const r=await sb.from('categories').delete().eq('id',id);if(r.error){alert('حذف دسته انجام نشد.');return;}await loadCategories();}
+function refreshUploadCategories(){const el=document.getElementById('uploadCategory');if(!el)return;el.innerHTML=cats.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');}
+function refreshVideoCategories(){const el=document.getElementById('videoCatInput');if(!el)return;el.innerHTML=cats.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');}
+function setUploadCategory(v){localStorage.setItem('arliUploadCategory',v)}
+
+async function loadClients(){
+ const {data,error}=await sb.from('clients').select('*').order('last_activity_at',{ascending:false});if(error){console.error(error);return;}clients=data||[];document.getElementById('clientCount').textContent=clients.length;await renderClients();
+}
+async function countsForClient(id){
+ const [p,v]=await Promise.all([sb.from('photo_likes').select('*',{count:'exact',head:true}).eq('client_id',id),sb.from('video_likes').select('*',{count:'exact',head:true}).eq('client_id',id)]);return {p:p.count||0,v:v.count||0};
+}
+async function renderClients(){const ctn=document.getElementById('clientCards');if(!ctn)return;if(!clients.length){ctn.innerHTML='<div class="note">هنوز مشتری‌ای ثبت نشده است.</div>';return;}ctn.innerHTML='';for(let i=0;i<clients.length;i++){const c=clients[i],co=await countsForClient(c.id);ctn.innerHTML+=`<div class="client-card"><div class="client-avatar">♡</div><div class="client-info"><h3>${esc(c.name)}</h3><p>${esc(c.phone||'—')}</p><div class="client-date">تاریخ ورود: ${fmtDate(c.joined_at)}</div><div class="client-date">آخرین فعالیت: ${fmtDate(c.last_activity_at)}</div></div><div class="client-likes"><div class="client-media-actions"><button class="btn soft" onclick="openLiked(${i});event.stopPropagation()">📷 عکس‌ها <b>${co.p}</b></button><button class="btn" onclick="openLikedVideos(${i});event.stopPropagation()">🎬 ویدیوها <b>${co.v}</b></button><button class="btn danger" onclick="deleteClient(${i});event.stopPropagation()">حذف مشتری</button></div></div></div>`;}}
+async function deleteClient(i){const c=clients[i];if(!c)return;if(!confirm(`مشتری «${c.name}» و علاقه‌مندی‌های ثبت‌شده او حذف شود؟`))return;try{const l1=await sb.from('photo_likes').delete().eq('client_id',c.id);if(l1.error){alert('حذف علاقه‌مندی‌های عکس انجام نشد.\n'+(l1.error.message||''));return;}const l2=await sb.from('video_likes').delete().eq('client_id',c.id);if(l2.error){alert('حذف علاقه‌مندی‌های ویدیو انجام نشد.\n'+(l2.error.message||''));return;}const r=await sb.from('clients').delete().eq('id',c.id);if(r.error){alert('حذف مشتری انجام نشد.\n'+(r.error.message||''));return;}await loadClients();alert('مشتری با موفقیت حذف شد.');}catch(err){console.error(err);alert('خطای غیرمنتظره در حذف مشتری:\n'+(err?.message||String(err)));}}
+
+function openClients(){const b=document.querySelector('.nav button[onclick*="clients"]');page('clients',b);loadClients();}
+async function openLiked(i){const c=clients[i];currentClient=c;document.getElementById('likedName').textContent=c.name;document.getElementById('likedPhone').textContent=c.phone||'—';const {data}=await sb.from('photo_likes').select('photo_id').eq('client_id',c.id).order('created_at',{ascending:false});const ids=(data||[]).map(x=>x.photo_id);document.getElementById('likedCount').textContent=ids.length;document.getElementById('likedGrid').innerHTML=ids.map(id=>{const p=photos.find(x=>x.id===id);return p?`<div class="liked-item" onclick="openImage('${esc(p.public_url)}')"><img src="${esc(p.public_url)}" alt="${esc(p.title||'')}"><div class="like-badge">♥ پسندیده شده · ${esc(catName(p.category_id))}</div></div>`:''}).join('')||'<div class="note">این مشتری هنوز عکسی را نپسندیده است.</div>';page('likedPhotos',{classList:{remove:()=>{},add:()=>{}}});}
+function openImage(src){const m=document.getElementById('modal');m.innerHTML=`<div class="modalbox image-modal"><button class="close" onclick="closeM()">×</button><img src="${src}" style="width:100%;max-height:78vh;object-fit:contain;border-radius:6px"></div>`;m.classList.add('show');}
+async function openLikedVideos(i){const c=clients[i];currentClient=c;document.getElementById('likedVideoName').textContent=c.name;document.getElementById('likedVideoPhone').textContent=c.phone||'—';const {data}=await sb.from('video_likes').select('video_id').eq('client_id',c.id).order('created_at',{ascending:false});const ids=(data||[]).map(x=>x.video_id);document.getElementById('likedVideoCount').textContent=ids.length;document.getElementById('likedVideoGrid').innerHTML=ids.map(id=>{const v=videos.find(x=>x.id===id);return v?`<div class="liked-video-card"><iframe src="${esc(embed(v.youtube_url))}?rel=0&modestbranding=1" title="${esc(v.title)}" allowfullscreen></iframe><div class="vlabel">♥ ${esc(v.title)} · ${esc(catName(v.category_id))}</div></div>`:''}).join('')||'<div class="note">این مشتری هنوز ویدیویی را نپسندیده است.</div>';page('likedVideos',{classList:{remove:()=>{},add:()=>{}}});}
+
+function openVideoModal(){document.getElementById('videoModal').classList.add('show');refreshVideoCategories();}
+function closeVideoModal(){document.getElementById('videoModal').classList.remove('show');}
+async function addVideo(){const title=document.getElementById('videoTitleInput').value.trim(),cat=document.getElementById('videoCatInput').value,url=document.getElementById('videoUrlInput').value.trim(),id=youtubeId(url);if(!title||!cat||!id){alert('عنوان، دسته‌بندی و لینک معتبر YouTube را وارد کنید.');return;}const r=await sb.from('videos').insert({title,category_id:cat,youtube_url:url,youtube_id:id,sort_order:videos.length,is_visible:true}).select('*').single();if(r.error){alert('افزودن ویدیو انجام نشد: '+r.error.message);return;}document.getElementById('videoTitleInput').value='';document.getElementById('videoUrlInput').value='';closeVideoModal();await loadVideos();}
+function renderVideos(){const g=document.getElementById('videoAdminGrid');if(!g)return;if(!videos.length){g.innerHTML='<div class="note">هنوز ویدیویی ثبت نشده است.</div>';return;}g.innerHTML=videos.map((v,i)=>`<div class="video-admin-card"><div class="video-admin-frame"><iframe src="${esc(embed(v.youtube_url))}?rel=0&modestbranding=1" title="${esc(v.title)}" loading="lazy" allowfullscreen></iframe></div><div class="video-admin-info"><div><h3>${esc(v.title)}</h3><p>${esc(catName(v.category_id))} · YouTube</p></div><div class="video-actions"><button class="danger" onclick="deleteVideo('${v.id}')">حذف</button></div></div></div>`).join('');}
+async function deleteVideo(id){if(!confirm('این ویدیو از نمونه‌کارها حذف شود؟'))return;const r=await sb.from('videos').delete().eq('id',id);if(r.error){alert('حذف ویدیو انجام نشد.');return;}await loadVideos();}
+
+async function loadAbout(){const r=await sb.from('site_settings').select('*').limit(1).maybeSingle();if(r.error){console.error(r.error);return;}const s=r.data;if(!s)return;aboutName.value=s.name||'';aboutTitle.value=s.professional_title||'';phone.value=s.phone||'';instagram.value=s.instagram||'';bio.value=s.bio||'';resume.value=s.resume||'';homeText.value=s.home_text||'';document.getElementById('homeTitle').value=(s.home_title||'Moments,\nbeautifully kept.').replace(/<br\s*\/?>(?=.)/gi,'\n');if(s.avatar_url)document.getElementById('avatar').src=s.avatar_url;if(s.home_image_url)document.getElementById('homeImage').src=s.home_image_url;}
+async function previewAvatar(input){
+  if(!input.files[0])return;
+  if(!sb){alert('اتصال به Supabase برقرار نیست.');return;}
+
+  const f=input.files[0];
+  if(!f.type || !f.type.startsWith('image/')){
+    alert('لطفاً یک فایل تصویر انتخاب کنید.');
+    return;
+  }
+
+  const safe=f.name.replace(/[^\w\-.\u0600-\u06FF ]+/g,'_').trim()||'profile';
+  const path=`profile/${Date.now()}-${crypto.randomUUID()}-${safe}`;
+
+  try{
+    const up=await sb.storage.from('photos').upload(path,f,{
+      contentType:f.type,
+      upsert:false,
+      cacheControl:'31536000'
+    });
+
+    if(up.error){
+      console.error('Profile upload error:',up.error);
+      alert('آپلود تصویر انجام نشد:\n'+(up.error.message||'خطای Storage'));
+      return;
+    }
+
+    const url=sb.storage.from('photos').getPublicUrl(path)?.data?.publicUrl;
+    if(!url){
+      alert('لینک عمومی تصویر ساخته نشد.');
+      return;
+    }
+
+    document.getElementById('avatar').src=url;
+    document.getElementById('avatar').dataset.path=path;
+    alert('تصویر با موفقیت آپلود شد. برای ثبت دائمی، «ذخیره تغییرات» را بزنید.');
+  }catch(err){
+    console.error('Profile upload unexpected error:',err);
+    alert('خطای غیرمنتظره در آپلود تصویر:\n'+(err?.message||String(err)));
+  }
+}
+async function previewHomeImage(input){
+  if(!input.files[0])return;
+  const f=input.files[0];
+  if(!f.type||!f.type.startsWith('image/')){alert('لطفاً یک فایل تصویر انتخاب کنید.');return;}
+  const safe=f.name.replace(/[^\w\-.\u0600-\u06FF ]+/g,'_').trim()||'home';
+  const path=`home/${Date.now()}-${crypto.randomUUID()}-${safe}`;
+  try{
+    const up=await sb.storage.from('photos').upload(path,f,{contentType:f.type,cacheControl:'31536000',upsert:false});
+    if(up.error){alert('آپلود عکس ابتدای صفحه انجام نشد:\n'+(up.error.message||''));return;}
+    const url=sb.storage.from('photos').getPublicUrl(path)?.data?.publicUrl;
+    if(!url){await sb.storage.from('photos').remove([path]);alert('لینک عمومی تصویر ساخته نشد.');return;}
+    document.getElementById('homeImage').src=url;
+    document.getElementById('homeImage').dataset.path=path;
+    alert('عکس ابتدای صفحه با موفقیت آپلود شد. برای ثبت دائمی، «ذخیره تغییرات» را بزنید.');
+  }catch(err){console.error(err);alert('خطای غیرمنتظره در آپلود عکس:\n'+(err?.message||String(err)));}
+}
+async function saveAbout(){
+ let row=(await sb.from('site_settings').select('*').limit(1).maybeSingle()).data;const payload={name:aboutName.value.trim(),professional_title:aboutTitle.value.trim(),phone:phone.value.trim(),instagram:instagram.value.trim(),bio:bio.value.trim(),resume:resume.value.trim(),home_text:homeText.value.trim(),home_title:document.getElementById('homeTitle').value.trim(),avatar_url:document.getElementById('avatar').src,home_image_url:document.getElementById('homeImage').src||null};let r;if(row)r=await sb.from('site_settings').update(payload).eq('id',row.id);else r=await sb.from('site_settings').insert(payload);if(r.error){alert('ذخیره اطلاعات انجام نشد.');console.error(r.error);return;}alert('اطلاعات درباره من ذخیره شد.');}
+
+async function loadStats(){
+  try{
+    const [pc,vc,cc,pl,vl,pv,vv]=await Promise.all([
+      sb.from('photos').select('*',{count:'exact',head:true}),
+      sb.from('videos').select('*',{count:'exact',head:true}),
+      sb.from('clients').select('*',{count:'exact',head:true}),
+      sb.from('photo_likes').select('*',{count:'exact',head:true}),
+      sb.from('video_likes').select('*',{count:'exact',head:true}),
+      sb.from('photo_views').select('*',{count:'exact',head:true}),
+      sb.from('video_views').select('*',{count:'exact',head:true})
+    ]);
+
+    const set=(id,val)=>{const e=document.getElementById(id);if(e)e.textContent=val;};
+    set('statPhotoCount',pc.count||0);
+    set('statPhotoLikes',pl.count||0);
+    set('statPhotoViews',pv.count||0);
+    set('statVideoCount',vc.count||0);
+    set('statVideoLikes',vl.count||0);
+    set('statVideoViews',vv.count||0);
+    set('clientCount',cc.count||0);
+
+    const catName=(id)=>{
+      const c=(cats||[]).find(x=>String(x.id)===String(id));
+      return c?.name||c?.title||'بدون دسته';
+    };
+
+    async function grouped(table,itemField,mediaTable){
+      const {data,error}=await sb.from(table).select(itemField);
+      if(error){console.error(error);return [];}
+      const counts={};
+      for(const row of (data||[])){
+        if(row[itemField]!=null)counts[row[itemField]]=(counts[row[itemField]]||0)+1;
+      }
+      const by={};
+      for(const [itemId,count] of Object.entries(counts)){
+        const {data:media}=await sb.from(mediaTable).select('category_id').eq('id',itemId).maybeSingle();
+        if(media){
+          const n=catName(media.category_id);
+          by[n]=(by[n]||0)+count;
+        }
+      }
+      return Object.entries(by).sort((a,b)=>b[1]-a[1]);
+    }
+
+    const [photoLikeCats,photoViewCats,videoLikeCats,videoViewCats]=await Promise.all([
+      grouped('photo_likes','photo_id','photos'),
+      grouped('photo_views','photo_id','photos'),
+      grouped('video_likes','video_id','videos'),
+      grouped('video_views','video_id','videos')
+    ]);
+
+    const pct=(n,total)=>total?Math.round(n*100/total)+'%':'0%';
+    const renderRows=(id,arr,total)=>{
+      const el=document.getElementById(id);
+      if(!el)return;
+      el.innerHTML=arr.length
+        ?arr.slice(0,5).map(x=>`<tr><td>${esc(x[0])}</td><td>${x[1]}</td><td>${pct(x[1],total)}</td></tr>`).join('')
+        :'<tr><td colspan="3">هنوز آماری ثبت نشده است.</td></tr>';
+    };
+
+    set('statPhotoPopular',photoLikeCats[0]?.[0]||'—');
+    set('statPhotoLikesTable',pl.count||0);
+    set('statPhotoLikesCat',photoLikeCats[0]?.[0]||'—');
+    set('statPhotoViewsTable',pv.count||0);
+    set('statPhotoViewsCat',photoViewCats[0]?.[0]||'—');
+    renderRows('photoPopularRows',photoLikeCats,pl.count||0);
+
+    set('statVideoPopular',videoLikeCats[0]?.[0]||'—');
+    set('statVideoLikesTable',vl.count||0);
+    set('statVideoLikesCat',videoLikeCats[0]?.[0]||'—');
+    set('statVideoViewsTable',vv.count||0);
+    set('statVideoViewsCat',videoViewCats[0]?.[0]||'—');
+    renderRows('videoPopularRows',videoLikeCats,vl.count||0);
+  }catch(err){
+    console.error('Stats error:',err);
+  }
+}
+function setDashboardMedia(type,btn){document.querySelectorAll('.dash-tab').forEach(x=>x.classList.remove('active'));btn.classList.add('active');document.getElementById('photoDashboard').style.display=type==='photos'?'block':'none';document.getElementById('videoDashboard').style.display=type==='videos'?'block':'none';}
+
+boot();
+
+</script>
+
+</body></html>
